@@ -45,4 +45,5 @@ def main():
     tree.walk(print_nodename)
 
 
-main()
+if __name__ == "__main__":
+    main()
