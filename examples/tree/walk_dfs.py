@@ -6,7 +6,7 @@ data = "data"
 children = "children"
 
 tree_data = {
-    name: "root",
+    name: "R_",
     data: {},
     children: [
         {
@@ -15,19 +15,48 @@ tree_data = {
                 {
                     name: "L2-1",
                     data: {},
-                    children: []
+                    children: [
+                        {
+                            name: "L3-L2-1-1",
+                            data: {},
+                            children: []
+                        },
+                        {
+                            name: "L3-L2-1-2",
+                            data: {},
+                            children: []
+                        },
+                    ]
                 },
                 {
                     name: "L2-2",
                     data: {},
+                    children: [
+                        {
+                            name: "L3-L2-2-1",
+                            data: {},
+                            children: []
+                        },
+                    ]
+                },
+                {
+                    name: "L2-3",
+                    data: {},
                     children: []
-                }
+                },
+
             ],
             data: {}
         },
-{
+        {
             name: "R1",
-            children: [],
+            children: [
+            {
+                    name: "R2-1",
+                    data: {},
+                    children: []
+                },
+            ],
             data: {}
         }
     ]
