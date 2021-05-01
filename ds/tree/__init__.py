@@ -1,1 +1,1 @@
-from .core import Tree
+from .core import TreeAPI as Tree

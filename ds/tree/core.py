@@ -1,22 +1,21 @@
 from base.tree import TreeNode
-from .strategy import TreeWalkStrategy
-from .exceptions import InvalidWalkStrategy
+from .traversal import TreeWalkStrategy, WalkAPI
 
 
-class Tree(object):
+class TreeAPI(object):
     """
     Tree implementation with in-order default walk strategy.
     """
 
     # Default walk strategy for tree
-    DEFAULT_WALK_STRATEGY = TreeWalkStrategy.IN_ORDER
+    DEFAULT_WALK_STRATEGY = TreeWalkStrategy.DEPTH_FIRST
 
     def __init__(self):
         """
-        Initialize root Node with empty left and right children
+        Initializes the root node and the traversal API.
         """
-        self.walk_strategy = self.DEFAULT_WALK_STRATEGY
         self.root = None
+        self.traversal_api = WalkAPI(strategy=self.DEFAULT_WALK_STRATEGY)
 
     def _create_tree(self, node: TreeNode, children_data: list):
         """
@@ -63,22 +62,6 @@ class Tree(object):
         self._create_tree(self.root, tree_data[TreeNode.CHILDREN])
         return self.root
 
-    def _walk(self, node: TreeNode, callback):
-        """
-        TODO: Add strategy support
-        Walk the tree based on the DFS Strategy
-        :param callback: callback method to run during traversal
-        :type callback:
-        :return:
-        :rtype:
-        """
-        # execute callback with node
-        callback(node)
-
-        # recurse for child
-        for child in node.children:
-            self._walk(child, callback)
-
     def walk(self, callback, strategy: str = None):
         """
         Walks the tree with a strategy. Need Callback function to process node during walk.
@@ -90,18 +73,14 @@ class Tree(object):
         :rtype:
         """
 
-        valid_strategies = TreeWalkStrategy.get_valid_strategies()
-
         if strategy is not None:
-            if strategy not in valid_strategies:
-                raise InvalidWalkStrategy(valid_strategies)
-            else:
-                self.walk_strategy = strategy
+            self.traversal_api = WalkAPI(strategy=strategy)
 
         if self.root is None:
             raise Exception("No root node to walk.")
         else:
-            self._walk(self.root, callback)
+            self.traversal_api.start_traversal(self.root, callback)
+
 
 
 
