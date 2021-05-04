@@ -4,14 +4,17 @@ from setuptools import setup, find_packages
 HERE = pathlib.Path(__file__).parent
 
 VERSION = '0.1.0'
-PACKAGE_NAME = 'ds'
+PACKAGE_NAME = 'py-ds'
 AUTHOR = 'Nitin Katyal'
 AUTHOR_EMAIL = 'nitinkatyal1314@gmail.com'
 URL = 'https://github.com/nitinkatyal1314/data-structures'
 
 LICENSE = 'MIT License'
 DESCRIPTION = 'Ready to use data structures'
-LONG_DESCRIPTION = (HERE / "README.md").read_text()
+
+with open("README.md", "r", encoding="utf-8") as fh:
+    LONG_DESCRIPTION = fh.read()
+
 LONG_DESC_TYPE = "text/markdown"
 
 INSTALL_REQUIRES = []
@@ -26,7 +29,7 @@ setup(name=PACKAGE_NAME,
       author_email=AUTHOR_EMAIL,
       url=URL,
       install_requires=INSTALL_REQUIRES,
-      python_requires=">=3.9",
+      python_requires=">=3.6",
       include_package_data=True,
       zip_safe=False,
       packages=find_packages()
