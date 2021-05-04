@@ -1,5 +1,5 @@
 from .exceptions import InvalidWalkStrategy
-from base.tree import TreeNode
+from .base import TreeNode
 
 
 class TreeWalkStrategy(object):

@@ -1,5 +1,5 @@
-from base.tree import TreeNode
 from .traversal import TreeWalkStrategy, WalkAPI
+from .base import TreeNode
 
 
 class TreeAPI(object):

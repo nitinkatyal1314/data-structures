@@ -48,7 +48,7 @@ class TreeNode(object):
 
     def has_children(self):
         """
-        Checks if node has childrens
+        Checks if node has children
         :return: True / False
         :rtype: bool
         """

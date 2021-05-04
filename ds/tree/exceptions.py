@@ -1,11 +1,7 @@
-class BaseExceptionTree(Exception):
-    """
-    Exception baseclass for tree data structure.
-    """
-    pass
+from common.exceptions import DSBaseException
 
 
-class NodeNotFound(BaseExceptionTree):
+class NodeNotFound(DSBaseException):
 
     def __init__(self, key):
         """
@@ -17,7 +13,7 @@ class NodeNotFound(BaseExceptionTree):
         super(NodeNotFound, self).__init__(message)
 
 
-class InvalidWalkStrategy(BaseExceptionTree):
+class InvalidWalkStrategy(DSBaseException):
 
     def __init__(self, valid_strategies):
         """
