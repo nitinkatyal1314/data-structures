@@ -1,4 +1,4 @@
-from ds.heap import HeapType, Heap
+from pyds.heap import HeapType, Heap
 
 
 def print_node(el: int):

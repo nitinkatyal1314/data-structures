@@ -1,4 +1,4 @@
-from ds.tree import Tree
+from pyds.tree import Tree
 
 
 name = "name"
