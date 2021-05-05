@@ -19,6 +19,23 @@ class HeapAPI(object):
         """
         self.heap_obj = Heap(heap_type)
 
+    def get_heap_as_array(self):
+        """
+        Returns the heap.
+        """
+
+        return self.heap_obj.get_heap()
+
+    def create_heap_from_array(self, arr: list):
+        """
+        Create heap from an array.
+        :param arr: list of items from which heap is to be created
+        :type arr: int
+        """
+
+        self.heap_obj.create_heap(arr)
+        return self.get_heap_as_array()
+
     def add_node(self, data: int):
         """
         Adds data to the heap.
