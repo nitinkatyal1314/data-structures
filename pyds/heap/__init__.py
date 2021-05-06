@@ -1,2 +1,2 @@
-from .core import HeapAPI as Heap
-from .core import HeapType
+from .api import HeapAPI as Heap
+from .api import HeapType
