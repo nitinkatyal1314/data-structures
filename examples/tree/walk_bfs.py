@@ -1,4 +1,4 @@
-from pyds.tree import Tree
+from pyds.tree import Tree, TreeWalkStrategy
 
 
 name = "name"
@@ -60,7 +60,7 @@ def main():
     tree = Tree()
     root = tree.parse(tree_data)
     print("Walking - Breadth First")
-    tree.walk(print_nodename, strategy="breadth-first")
+    tree.walk(print_nodename, strategy=TreeWalkStrategy.BREADTH_FIRST)
 
 
 if __name__ == "__main__":
