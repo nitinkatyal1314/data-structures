@@ -77,7 +77,7 @@ class Heap(object):
         # list length
         n = len(arr)
 
-        # No leaf to process the leaf nodes
+        # No need to process the leaf nodes
         # so we can start with their parent and move backward
         # the heapify method will recurse to adjust the position of the element
         start_index = int((n / 2) - 1)
@@ -213,7 +213,7 @@ class Heap(object):
         """
         Add data to th heap.
         :param data: The data to be stored in the heap
-        :type data:
+        :type data: int
         :return:
         :rtype:
         """
