@@ -1,5 +1,4 @@
 import sys
-from .conf import GraphType
 from .exceptions import NodeDoesNotExist, DuplicateNodeNotAllowed, AdjacentNodeDoesNotExist
 
 
