@@ -4,6 +4,7 @@ This repo contains python implementation of data structures. The following data 
 
 1. Tree
 2. Heap
+3. Graph
 
 
 # Installation
