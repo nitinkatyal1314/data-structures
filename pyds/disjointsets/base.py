@@ -15,7 +15,7 @@ class DisjointSets(object):
     def __init__(self, nodes: list):
         """
         Initializes a list containing TreeNodes. As union operation is performed over these
-        nodes they will merge together. If two nodes have the same root node
+        nodes they will merge together. If two nodes does not have the same root node
         they will form a disjoint set.
 
         """
@@ -36,14 +36,14 @@ class DisjointSets(object):
             else:
                 print("Key %s already present. Skipping this node." % node_name)
 
-    def is_disjoint(self, node1, node2):
+    def is_disjoint(self, node1: str, node2: str):
         """
         Checks if the two nodes are disjoint (have the same root node).
 
-        :param node1:
-        :type node1:
-        :param node2:
-        :type node2:
+        :param node1: the first item in the set
+        :type node1: str
+        :param node2: the second item in the set
+        :type node2: str
         :return:
         :rtype:
         """
@@ -55,7 +55,7 @@ class DisjointSets(object):
         else:
             return True
 
-    def union(self, node1, node2):
+    def union(self, node1: str, node2: str):
         """
         Take union of node1 and node2. Combines the tree in the self.all_sets
         containing node1 and node2. The tree with smaller height is added at the
