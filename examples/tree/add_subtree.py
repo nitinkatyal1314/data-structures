@@ -1,9 +1,9 @@
-from pyds.tree import Tree
+from pyds.tree import TreeAPI, TreeNodeKeys, TreeWalkStrategy
 
 # keys for creating tree dict
-name = "name"
-data = "data"
-children = "children"
+name = TreeNodeKeys.NAME
+data = TreeNodeKeys.DATA
+children = TreeNodeKeys.CHILDREN
 
 # subtree
 subtree = {
@@ -37,14 +37,6 @@ tree_data = {
 }
 
 
-# method checks if node name is root, adds subtree as a child at index 0
-def add_subtree(node):
-    if node.name == "root":
-        t2 = Tree()
-        root_subtree = t2.parse(subtree)
-        node.add_children_at_index(0, root_subtree)
-
-
 # method prints the name of the node
 def print_nodename(node):
     print(node.name)
@@ -52,13 +44,15 @@ def print_nodename(node):
 
 # main method which parse the tree data, calls add_subtree and print_nodename method
 def main():
-    t1 = Tree()
-    t1.parse(tree_data)
+    api = TreeAPI()
+    root1 = api.parse(tree_data)
     print("Walking Depth First before adding subtree : ")
-    t1.walk(print_nodename)
-    t1.walk(add_subtree)
+    api.walk(root1, strategy=TreeWalkStrategy.DEPTH_FIRST, callback=print_nodename)
+
+    root2 = api.parse(subtree)
+    root1.add_children_at_index(0, root2)
     print("Walking Depth First after adding subtree : ")
-    t1.walk(print_nodename)
+    api.walk(root1, strategy=TreeWalkStrategy.DEPTH_FIRST, callback=print_nodename)
 
 
 if __name__ == "__main__":

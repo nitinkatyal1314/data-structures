@@ -32,7 +32,28 @@ class WalkAPI:
         else:
             self.current_strategy = strategy
 
-    def _traverse_dfs_inorder(self, root_node: TreeNode, callback):
+    def traverse_dfs_tree_to_dict(self, node: TreeNode, children: list):
+        """
+        DFS traversal to convert tree to dict
+
+        :param node:
+        :type node:
+        :param children:
+        :type children:
+        :return:
+        :rtype:
+        """
+
+        for child in node.children:
+            child_data = {
+                TreeNode.NAME: child.name,
+                TreeNode.DATA: child.data,
+                TreeNode.CHILDREN: []
+            }
+            children.append(child_data)
+            self.traverse_dfs_tree_to_dict(child, child_data[TreeNode.CHILDREN])
+
+    def _traverse_dfs_inorder(self, root_node: TreeNode, callback, *args, **kwargs):
         """
         Run the DFS in-order traversal using recursion.
         :param root_node: Node treated as root for traversal
@@ -43,13 +64,13 @@ class WalkAPI:
         :rtype:
         """
         # execute callback with node
-        callback(root_node)
+        callback(root_node, *args, **kwargs)
 
         # recurse for child
         for child in root_node.children:
             self._traverse_dfs_inorder(child, callback)
 
-    def _traverse_bfs_inorder(self, queue: list, callback):
+    def _traverse_bfs_inorder(self, queue: list, callback, *args, **kwargs):
         """
         Runt the BFS in-order traversal using recursion.
         :param queue: queue containing nodes in order of traversal
@@ -64,14 +85,14 @@ class WalkAPI:
             node = queue.pop(0)
 
             # execute callback (for in-order)
-            callback(node)
+            callback(node, *args, **kwargs)
 
             for child in node.children:
                 queue.append(child)
 
             self._traverse_bfs_inorder(queue, callback)
 
-    def start_traversal(self, root_node: TreeNode, callback):
+    def start_traversal(self, root_node: TreeNode, callback, *args, **kwargs):
         """
         Walk the tree given the root node.
         :param root_node: Node treated as root for traversal
@@ -83,9 +104,9 @@ class WalkAPI:
         """
 
         if self.current_strategy == TreeWalkStrategy.DEPTH_FIRST:
-            self._traverse_dfs_inorder(root_node, callback)
+            self._traverse_dfs_inorder(root_node, callback, *args, **kwargs)
         elif self.current_strategy == TreeWalkStrategy.BREADTH_FIRST:
-            self._traverse_bfs_inorder([root_node], callback)
+            self._traverse_bfs_inorder([root_node], callback, *args, **kwargs)
 
     @staticmethod
     def allowed_traversal_strategies():

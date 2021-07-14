@@ -14,15 +14,14 @@ class TreeAPI(object):
         """
         Initializes the root node and the traversal API.
         """
-        self.root = None
         self.traversal_api = WalkAPI(strategy=self.DEFAULT_WALK_STRATEGY)
 
-    def _create_tree(self, node: TreeNode, children_data: list):
+    def _add_children_to_node(self, node, children_data: list):
         """
         Creates the tree based on the data dictionary. Tree assumes mapping of tree
         in a dictionary, and creates nodes with Depth-First strategy using recursion.
-        :param node:
-        :type node:
+        :param node:  a tree node instance
+        :type node: TreeNode
         :param children_data:
         :type children_data:
         :return:
@@ -40,7 +39,7 @@ class TreeAPI(object):
                                       data=child_data[TreeNode.DATA])
 
                 node.add_child(child_node)
-                self._create_tree(child_node, child_data[TreeNode.CHILDREN])
+                self._add_children_to_node(child_node, child_data[TreeNode.CHILDREN])
 
     def parse(self, tree_data: dict):
         """
@@ -58,28 +57,44 @@ class TreeAPI(object):
             raise e
 
         root = TreeNode(name=tree_data[TreeNode.NAME], data=tree_data[TreeNode.DATA])
-        self.root = root
-        self._create_tree(self.root, tree_data[TreeNode.CHILDREN])
-        return self.root
+        self._add_children_to_node(root, tree_data[TreeNode.CHILDREN])
+        return root
 
-    def walk(self, callback, strategy: str = None):
+    def walk(self, root: TreeNode, strategy: str = TreeWalkStrategy.DEPTH_FIRST, callback=None, *args, **kwargs):
         """
         Walks the tree with a strategy. Need Callback function to process node during walk.
-        :param callback:
-        :type callback:
-        :param strategy:
-        :type strategy:
+        :param root: root node of the tree
+        :type root: TreeNode
+        :param strategy: strategy to use when traversing (DFS/ BFS)
+        :type strategy: str
+        :param callback: The callback function executed when node is visited during traversal
+        :type callback: function
+        :param args: arguments for callback function
+        :type args:
+        :param kwargs: keyword arguments for callback function
+        :type kwargs:
         :return:
         :rtype:
         """
 
-        if strategy is not None:
-            self.traversal_api = WalkAPI(strategy=strategy)
+        self.traversal_api = WalkAPI(strategy=strategy)
+        self.traversal_api.start_traversal(root, callback, *args, **kwargs)
 
-        if self.root is None:
-            raise Exception("No root node to walk.")
-        else:
-            self.traversal_api.start_traversal(self.root, callback)
+    def as_dict(self, root: TreeNode):
+        """
+        Converts tree to dict given its root node.
+
+        :param root: The root node of the tree.
+        :type root: TreeNode
+        :return:
+        :rtype:
+        """
+        tree_as_dict = {TreeNode.NAME: root.name, TreeNode.DATA: root.data, TreeNode.CHILDREN: []}
+        self.traversal_api.traverse_dfs_tree_to_dict(root, tree_as_dict[TreeNode.CHILDREN])
+
+        return tree_as_dict
+
+
 
 
 

@@ -1,14 +1,21 @@
 import json
 
 
-class TreeNode(object):
+class TreeNodeKeys(object):
     """
-    Node class for tree data structure.
+    Holds the key names for the Tree node.
+    A Tree class should inherit this to implement node keys.
     """
 
     NAME = "name"
     DATA = "data"
     CHILDREN = "children"
+
+
+class TreeNode(TreeNodeKeys):
+    """
+    Node class for tree data structure. A single node would also be a tree.
+    """
 
     def __init__(self, name: str, data: dict = None):
         """

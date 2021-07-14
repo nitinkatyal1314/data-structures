@@ -1,9 +1,9 @@
-from pyds.tree import Tree, TreeWalkStrategy
+from pyds.tree import TreeAPI, TreeWalkStrategy, TreeNodeKeys
 
 
-name = "name"
-data = "data"
-children = "children"
+name = TreeNodeKeys.NAME
+data = TreeNodeKeys.DATA
+children = TreeNodeKeys.CHILDREN
 
 tree_data = {
     name: "R_",
@@ -68,10 +68,10 @@ def print_nodename(node):
 
 
 def main():
-    tree = Tree()
-    root = tree.parse(tree_data)
+    api = TreeAPI()
+    root = api.parse(tree_data)
     print("Walking - Depth First")
-    tree.walk(print_nodename, strategy=TreeWalkStrategy.DEPTH_FIRST)
+    api.walk(root, strategy=TreeWalkStrategy.DEPTH_FIRST, callback=print_nodename)
 
 
 if __name__ == "__main__":
