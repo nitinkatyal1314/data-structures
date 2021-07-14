@@ -39,25 +39,14 @@ name = TreeNodeKeys.NAME
 data = TreeNodeKeys.DATA
 children = TreeNodeKeys.CHILDREN
 
+# tree as JSON with root node and 2 children (L1 and R1), and R2-1 is the child of R1
 tree_data = {
     name: "R_",
     data: {},
     children: [
         {
             name: "L1",
-            children: [
-                {
-                    name: "L2-1",
-                    data: {},
-                    children: [
-                        {
-                            name: "L3-1",
-                            data: {},
-                            children: []
-                        },
-                    ]
-                }
-            ],
+            children: [],
             data: {}
         },
         {
