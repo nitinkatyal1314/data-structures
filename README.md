@@ -40,6 +40,8 @@ data = TreeNodeKeys.DATA
 children = TreeNodeKeys.CHILDREN
 
 # tree as JSON with root node and 2 children (L1 and R1), and R2-1 is the child of R1
+# if the tree is large, it is recommended to create smaller subtrees and use the add_child API
+# refer examples/tree/add_subtree.py for the API
 tree_data = {
     name: "R_",
     data: {},
