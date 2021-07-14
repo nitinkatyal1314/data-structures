@@ -303,7 +303,7 @@ class DirectedGraph(Graph):
 
     def walk_dfs_iterative(self, start_node: str, callback=None):
         """
-        Walk the graph in BFS manner.
+        Walk the graph in DFS manner.
 
         The time complexity of this algorithm is O(|V| + |E|) where
         |V| = number of vertices
@@ -381,7 +381,7 @@ class DirectedGraph(Graph):
         iterating through the nodes maintained in the queue which is passed along
         whereas the stack is inherently available while recursing in DFS.
 
-        This makes DFS implementation simple and memory efficient.
+        This makes BFS implementation simple and memory efficient.
 
         Runtime: O(|V| + |E|) [For explanation look at iterative method]
 
@@ -425,9 +425,9 @@ class DirectedGraph(Graph):
         Walk the graph in BFS manner.
 
         Use a queue to maintain the node to be traversed. The only difference between this
-        and BFS is how the next node is picked up from the list - here it is a queue
-        so the first item is picked up while in BFS it was a stack and the last
-        item is picked.
+        and DFS is how the next node is picked up from the list - here it is a queue
+        so the first item is picked in each iteration while in DFS the stack is used and last item
+        is picked.
 
         The time complexity of this algorithm is O(|V| + |E|) where
         |V| = number of vertices
