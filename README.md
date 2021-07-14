@@ -32,46 +32,63 @@ Below are some snippets :
 
 
 ```bash
-from pyds.tree import Tree
+from pyds.tree import TreeAPI, TreeWalkStrategy, TreeNodeKeys
 
 
-# attributes of the node in the tree
-_children = "children"
-_name = "name"
-_data = "data"
+name = TreeNodeKeys.NAME
+data = TreeNodeKeys.DATA
+children = TreeNodeKeys.CHILDREN
 
-# dictionary representation of tree
 tree_data = {
-  _name: "R_",
-  _data: {},
-  _children: [
-    {
-      _name: "L1",
-      _data: {},
-      _children: []
-    },
-    {
-      _name: "R1",
-      _data: {},
-      _children: []
-    }
-  ]
+    name: "R_",
+    data: {},
+    children: [
+        {
+            name: "L1",
+            children: [
+                {
+                    name: "L2-1",
+                    data: {},
+                    children: [
+                        {
+                            name: "L3-1",
+                            data: {},
+                            children: []
+                        },
+                    ]
+                }
+            ],
+            data: {}
+        },
+        {
+            name: "R1",
+            children: [
+                {
+                    name: "R2-1",
+                    data: {},
+                    children: []
+                },
+            ],
+            data: {}
+        }
+    ]
 }
 
-
-# instantiate the tree
-tree = Tree()
-
-# parse the tree
-root = tree.parse(tree_data)
-
-# walk callback method, executed for every node that is traversed
+# callback methof to print the node
 def print_nodename(node):
     print(node.name)
 
-# walk the tree (BFS)
-# the print_nodename method is passed as a callback while walking
-tree.walk(print_nodename, strategy="breadth-first")
+# the main API
+def main():
+    api = TreeAPI()
+    root = api.parse(tree_data)
+    print("Walking - Breadth First")
+    api.walk(root, strategy=TreeWalkStrategy.BREADTH_FIRST, callback=print_nodename)
+
+
+# run the main method
+main()
+
 
 ```
 
