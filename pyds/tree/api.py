@@ -94,6 +94,18 @@ class TreeAPI(object):
 
         return tree_as_dict
 
+    def has_node(self, root_node: TreeNode, node_name: str):
+        """
+        Check if the node with name exist in the tree given it's root node
+        :param root_node: root node of the tree
+        :type root_node: TreeNode
+        :param node_name: name of the node to search
+        :type node_name: str
+        :return: True/ False if the node is found / not-found
+        :rtype: bool
+        """
+        return self.traversal_api.search(root_node, node_name)
+
     def get_height(self, root_node: TreeNode):
         """
         Get the height of the tree given the root node.
@@ -105,6 +117,7 @@ class TreeAPI(object):
         """
 
         return self.traversal_api.traverse_get_height(root_node)
+
 
 
 

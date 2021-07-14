@@ -32,6 +32,40 @@ class WalkAPI:
         else:
             self.current_strategy = strategy
 
+    def _search(self, node: TreeNode, node_name: str, status: list):
+        """
+        Search for a node using DFS traversal. The traversal will stop as soon as node is found.
+
+        :param node: the current node which is traversed
+        :type node: TreeNode
+        :param node_name: name of the node to be searched
+        :type node_name: str
+        :param status: immutable list to store the status (found / not found)
+        :type status: list
+        :return:
+        :rtype:
+        """
+
+        if node.name == node_name:
+            status[0] = True
+        else:
+            for child in node.children:
+                self._search(child, node_name, status)
+
+    def search(self, root_node: TreeNode, node_name: str):
+        """
+        Invokes the search method to find the node given the root node of the tree and the node name.
+        :param root_node: Root node of the Tree
+        :type root_node: TreeNode
+        :param node_name: name of the node
+        :type node_name: str
+        :return: node is found or not
+        :rtype: bool
+        """
+        status = [False]
+        self._search(root_node, node_name, status)
+        return status[0]
+
     def _traverse_dfs_get_height(self, node: TreeNode):
         """
         Recursive method which calculates the height of the child subtree and compares
