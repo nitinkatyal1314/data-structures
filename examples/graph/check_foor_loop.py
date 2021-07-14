@@ -1,4 +1,4 @@
-from pyds.graph import Graph, GraphTypes
+from pyds.graph import GraphAPI, GraphTypes
 
 
 def main():
@@ -15,23 +15,27 @@ def main():
     """
 
     # create graph, add nodes
-    graph = Graph(graph_type=GraphTypes.DIRECTED)
-    graph.add_node("A")
-    graph.add_node("B")
-    graph.add_node("C")
-    graph.add_node("D")
-    graph.add_node("E")
+    api = GraphAPI()
+
+    # change this to Directed for directed graphs
+    graph = api.init_graph(graph_type=GraphTypes.UNDIRECTED)
+
+    # create graph, add nodes
+    api.add_node(graph, "A")
+    api.add_node(graph, "B")
+    api.add_node(graph, "C")
+    api.add_node(graph, "D")
+    api.add_node(graph, "E")
 
     # connect nodes in graph
-    graph.add_edge("A", "B")
-    graph.add_edge("A", "C")
-    graph.add_edge("B", "D")
-    graph.add_edge("C", "B")
-    graph.add_edge("D", "C")
-    graph.add_edge("D", "E")
+    api.add_edge(graph, "B", "A")
+    api.add_edge(graph, "A", "D")
+    api.add_edge(graph, "E", "B")
+    api.add_edge(graph, "B", "C")
+    api.add_edge(graph, "D", "E")
 
     print("Checking if graph has loops...")
-    loop_data = graph.has_loop()
+    loop_data = api.has_loop(graph)
     if loop_data[0]:
         print("Loop Detected is : ", loop_data[1])
     else:

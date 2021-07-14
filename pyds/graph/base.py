@@ -1,5 +1,6 @@
 import sys
 from .exceptions import NodeDoesNotExist, DuplicateNodeNotAllowed, AdjacentNodeDoesNotExist
+from pyds.disjointsets import DisjointSetAPI
 
 
 class Graph(object):
@@ -246,6 +247,19 @@ class DirectedGraph(Graph):
             return list(self.graph[key][self._ADJACENT_NODES])
         else:
             return list(map(lambda node: list(node.keys())[0], self.graph[key][self._ADJACENT_NODES]))
+
+    def get_total_edges(self):
+        """
+        Calculates the total number of edges in the graph. For Directed graph, the sum of all adjacent edges for
+        all the nodes gives the total number of edges.
+        :return: total number of edges in the graph
+        :rtype: int
+        """
+        edges = 0
+        for vertex in self.get_all_nodes():
+            edges += len(self.graph[vertex][self._ADJACENT_NODES])
+
+        return edges
 
     def walk_dfs_recursive(self, node: str, visited_nodes: list, callback=None):
         """
@@ -756,6 +770,10 @@ class UnDirectedGraph(DirectedGraph):
     The graph will be stored the same way as DirectedGraph.
     """
 
+    def __init__(self):
+        super(UnDirectedGraph, self).__init__()
+        self.disjoint_set_api = DisjointSetAPI()
+
     def add_edge(self, source: str, destination: str, weight: float = 0.0):
         """
         Connect two nodes given their name (key) and the weight.
@@ -780,6 +798,357 @@ class UnDirectedGraph(DirectedGraph):
         self.graph[destination][self._ADJACENT_NODES].append(
             {source: weight}
         )
+
+    def get_total_edges(self):
+        """
+        For Undirected graph an edge is counted twice (A -> B also means B -> A), so we divide the number of edges by 2.
+        This also means the the count from Directed graph implementation will always be a multiple of 2.
+        :return: total number of edges in the graph
+        :rtype: int
+        """
+        edges_count = super(UnDirectedGraph, self).get_total_edges()
+        return int(edges_count / 2)
+
+    def _dfs_modified_find_loop(self, node: str, stack: list, has_loop: list):
+        """
+        Modified DFs to find the loop using disjoint sets. Once a loop is detected, the stack will contain
+        the vertices / nodes forming the loop.
+
+        :param node: node that is being visited
+        :type node: str
+        :param stack: collection of nodes forming loop
+        :type stack: list
+        :param has_loop: Whether the loop has been detected
+        :type has_loop: list
+        :return:
+        :rtype:
+        """
+
+        stack.append(node)
+
+        adjacent_nodes = self.find_adjacent_nodes(node, only_keys=True)
+        for ad_n in adjacent_nodes:
+
+            # check if adjacent node is not taking back to previous node
+            # adding None so the condition can work smoothly
+            if ad_n != [None, None, *stack][-2]:
+
+                # check if nodes form disjoint set
+                if self.disjoint_set_api.is_disjoint(node, ad_n):
+
+                    # take a union of the set
+                    self.disjoint_set_api.union(node, ad_n)
+
+                    self._dfs_modified_find_loop(ad_n, stack, has_loop)
+
+                    # when recurse back if loop has been detected, break
+                    if has_loop[0]:
+                        break
+                else:
+                    # loop will be created when adding node and ad_n (as a edge)
+
+                    # get the previous index of the vertex
+                    previous_index = stack.index(ad_n)
+
+                    # remove all nodes before the index so we only have nodes
+                    # forming the loop
+                    for i in range(previous_index):
+                        stack.pop(0)
+
+                    # set loop to True
+                    has_loop[0] = True
+                    break
+
+    def has_loop(self):
+        """
+        For undirected graphs disjoint sets are used to detect a cycle.
+        :return: Whether graph has cycle and the nodes which form the cycle
+        :rtype: True / False if graph has loop, and the nodes which form the loop
+        """
+
+        vertices = self.get_all_nodes()
+        vertices_forming_loop = []
+        has_loop = [False]
+
+        self.disjoint_set_api.create(vertices)
+
+        # start with the first vertex
+        self._dfs_modified_find_loop(vertices[0], vertices_forming_loop, has_loop)
+
+        return has_loop[0], vertices_forming_loop
+
+    def _find_adjacent_node_with_min_cost(self, node: str, excluded_nodes: list = None):
+        """
+        Finds the adjacent node with minimum cost.
+        Since the node can be connected to all the other nodes the running time is O(|V|).
+
+        :param node: node to process
+        :type node: str
+        :param excluded_nodes: list of excluded nodes
+        :type excluded_nodes: list
+        :return:
+        :rtype:
+        """
+
+        # holds the min cost
+        min_size = sys.maxsize
+
+        # adjacent node with min cost
+        ad_n_with_min_cost = None
+
+        adjacent_nodes = self.find_adjacent_nodes(node, only_keys=False)
+
+        exclusions = [] if excluded_nodes is None else excluded_nodes
+
+        # traverse through all adjacent nodes to find min cost edge
+        for ad_n in adjacent_nodes:
+            ad_n_key = list(ad_n.keys())[0]
+            ad_n_cost = list(ad_n.values())[0]
+            if ad_n_key not in exclusions:
+                if ad_n_cost < min_size:
+                    min_size = ad_n_cost
+                    ad_n_with_min_cost = ad_n_key
+
+        return ad_n_with_min_cost, min_size
+
+    def _prims(self, spanning_tree, source_node, destination_node, cost_edge, total_cost):
+        """
+        Connects the edge to the spanning tree and evaluates the next edge to be connected
+        using recursion.
+
+        :param spanning_tree: Undirected graph as a spanning tree
+        :type spanning_tree: UnDirectedGraph
+        :param source_node: source node to connect the node
+        :type source_node: str
+        :param destination_node: destination node to connect the node
+        :type destination_node: str
+        :param cost_edge: cost of the edge getting connected in the spanning tree
+        :type cost_edge: float
+        :param total_cost: total cost of the spanning tree
+        :type total_cost: list
+        :return:
+        :rtype:
+        """
+        print("Connecting edge %s->%s with cost %.1f" % (source_node, destination_node, cost_edge))
+
+        # add the destination node, source node will already exist
+        spanning_tree.add_node(destination_node)
+        spanning_tree.add_edge(source_node, destination_node, weight=cost_edge)
+
+        # add the cost
+        total_cost[0] += cost_edge
+
+        # check if the spanning tree property now holds
+        if len(spanning_tree.get_all_nodes()) == len(self.get_all_nodes()) and \
+                spanning_tree.get_total_edges() == len(self.get_all_nodes()) - 1:
+            print("Spanning tree complete. Finishing ...")
+        else:
+
+            # parent node to which the next min is to be added
+            parent_node = None
+
+            # holds the node with min cost
+            node_with_min_cost = None
+
+            # min cost of node
+            min_size = sys.maxsize
+
+            spanning_tree_all_nodes = spanning_tree.get_all_nodes()
+
+            # find the node with minimum cost adjacent to any node in the spanning tree
+            for node in spanning_tree_all_nodes:
+                resultant_node, size = self._find_adjacent_node_with_min_cost(node,
+                                                                              excluded_nodes=spanning_tree_all_nodes)
+
+                if resultant_node is not None:
+                    if size < min_size:
+                        node_with_min_cost = resultant_node
+                        parent_node = node
+                        min_size = size
+
+            # if parent node and node with next min are calculated, recurse
+            if parent_node is not None and node_with_min_cost is not None:
+                self._prims(spanning_tree, parent_node, node_with_min_cost, min_size, total_cost)
+
+    def _convert_graph_to_list(self):
+        """
+        Converts the graph to a list.
+
+        :return:
+        :rtype:
+        """
+        graph = []
+        for node, node_data in self.graph.items():
+            for ad_n in node_data[self._ADJACENT_NODES]:
+                name_ad_n = list(ad_n.keys())[0]
+                cost_n_to_ad_n = list(ad_n.values())[0]
+
+                # only add if the node and edge has not been added before
+                if [node, name_ad_n, cost_n_to_ad_n] not in graph and [name_ad_n, node, cost_n_to_ad_n] not in graph:
+                    graph.append([node, name_ad_n, cost_n_to_ad_n])
+
+        return graph
+
+    @staticmethod
+    def _get_edge_with_min_cost(graph: list):
+        """
+
+        :param graph:
+        :type graph:
+        :return:
+        :rtype:
+        """
+
+        if len(graph) > 0:
+            edge = graph.pop(0)
+            return edge
+        else:
+            return []
+
+    def generate_minimum_cost_spanning_tree_using_kruskal(self):
+        """
+        Generate minimum cost spanning tree using Kruskal's Algorithm.
+
+        Pseudo code for Kruskal's algorithm is:
+        1. Create a Graph say STG (Spanning Tree Graph - A subset of Graph) from this edge
+        2. Add all the vertices of the graph in the disjoint set
+        3. Find the edge with minimum cost / weight
+        4. Check if the vertices connecting the edge forms a cycle
+            4.1 If not - add the vertices to spanning tree (STG)
+            4.2 If yes - ignore the edge
+        5. go to step 2. [for remaining edges]
+
+        :return:
+        :rtype:
+        """
+
+        # get all the vertices
+        vertices = self.get_all_nodes()
+
+        # total vertices
+        num_of_vertices_graph = len(vertices)
+
+        # create a disjoint set
+        disjoint_api = DisjointSetAPI()
+        disjoint_api.create(vertices)
+
+        # create a spanning tree
+        spanning_tree = UnDirectedGraph()
+        num_of_vertices_spanning = len(spanning_tree.get_all_nodes())
+
+        # convert graph to a list
+        sorted_graph = sorted(self._convert_graph_to_list(), key=lambda e: e[2])
+
+        # total cost of the spanning tree
+        total_cost = 0
+
+        spanning_tree_complete = False
+
+
+        # while spanning tree property is not attained
+        while not spanning_tree_complete:
+
+            # check if the spanning tree property now holds
+            if len(spanning_tree.get_all_nodes()) == len(self.get_all_nodes()) and \
+                    spanning_tree.get_total_edges() == len(self.get_all_nodes()) - 1:
+                spanning_tree_complete = True
+                print("Spanning tree complete. Finishing ...")
+            else:
+                edge = self._get_edge_with_min_cost(sorted_graph)
+                if edge:
+
+                    # check if the vertices of the edge forms a disjoint set or not
+                    # add to spanning tree only if sets are disjoint
+                    if disjoint_api.is_disjoint(edge[0], edge[1]):
+                        print("Connecting edge %s->%s with cost %.1f" % (edge[0], edge[1], edge[2]))
+                        if edge[0] not in spanning_tree.get_all_nodes():
+                            spanning_tree.add_node(edge[0])
+
+                        if edge[1] not in spanning_tree.get_all_nodes():
+                            spanning_tree.add_node(edge[1])
+
+                        # update the spanning tree
+                        spanning_tree.add_edge(edge[0], edge[1], edge[2])
+                        total_cost += edge[2]
+
+                        # update the count of spanning tree vertices
+                        num_of_vertices_spanning = len(spanning_tree.get_all_nodes())
+
+                        # take union of disjoint set
+                        disjoint_api.union(edge[0], edge[1])
+                    else:
+                        print("Edge %s->%s are not disjoint, and make a cycle. Ignoring it." %(edge[0], edge[1]))
+
+        return {
+            "tree": spanning_tree.as_dict(),
+            "cost": total_cost
+        }
+
+    def generate_minimum_cost_spanning_tree_using_prims(self):
+        """
+        Generate minimum cost spanning tree using Prim's Algorithms.
+
+        Pseudo code for Prim's algorithm is:
+        1. Find edge with minimum cost / weight
+        2. Create a Graph say STG (Spanning Tree Graph - A subset of Graph) from this edge
+        3. Find the node which has the minimum cost but is also connected with the nodes in the STG in step 2.
+        4. Check If no_of_nodes in STG = no_of_nodes in graph and no_of_edges in STG = no_of_nodes in graph - 1
+            4.1 Exit
+        5. Add the node to graph STG
+        6. Move to step 3.
+
+        At the end STG will be the minimum cost spanning tree.
+
+        NOTE: Prim's algorithm does not work for disconnected graph as it always look for the adjacent nodes
+        with minimum cost.
+        Also Prim's does not work for directed graphs because there might be a directed graph which has no more adjacent
+        nodes but still many of its nodes remain unvisited when constructing the spanning tree.
+
+        Runtime:
+
+        For each node in STG, the algorithm finds the node with minimum cost from their adjacent nodes. Iterating through
+        the adjacent nodes for all the nodes in STG at max can take O(|E|) because we loop through all the edges
+        in the original graph, and this process is repeated for each node in STG therefore runtime is:
+
+        O(|V| * |E|)
+
+        :return: dictionary containing spanning tree and the cost
+        :rtype: dict
+        """
+
+        parent_node = None
+        child_node = None
+
+        # min cost
+        min_cost = sys.maxsize
+
+        # nodes which has been visited
+        visited_nodes = []
+
+        # find the edge with the minimum cost
+        for node in self.get_all_nodes():
+            visited_nodes.append(node)
+            resultant_node, size = self._find_adjacent_node_with_min_cost(node, excluded_nodes=visited_nodes)
+
+            if resultant_node is not None:
+                if size < min_cost:
+                    min_cost = size
+                    parent_node = node
+                    child_node = resultant_node
+
+        spanning_tree = UnDirectedGraph()
+        spanning_tree.add_node(parent_node)
+
+        # total cost of the spanning tree
+        total_cost = [0]
+
+        self._prims(spanning_tree, parent_node, child_node, min_cost, total_cost)
+
+        # return the spanning tree and cost
+        return {
+            "tree": spanning_tree.as_dict(),
+            "cost": total_cost[0]
+        }
 
 
 

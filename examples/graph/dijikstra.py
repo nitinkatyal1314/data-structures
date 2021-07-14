@@ -1,4 +1,4 @@
-from pyds.graph import Graph, GraphTypes
+from pyds.graph import GraphAPI, GraphTypes
 
 
 def main():
@@ -13,29 +13,32 @@ def main():
     :rtype:
     """
 
+    # create graph (DIRECTED), add nodes
     # create graph, add nodes
-    graph = Graph(graph_type=GraphTypes.DIRECTED)
-    graph.add_node("A")
-    graph.add_node("B")
-    graph.add_node("C")
-    graph.add_node("D")
-    graph.add_node("E")
-    graph.add_node("F")
+    api = GraphAPI()
+    graph = api.init_graph(graph_type=GraphTypes.DIRECTED)
+
+    api.add_node(graph, "A")
+    api.add_node(graph, "B")
+    api.add_node(graph, "C")
+    api.add_node(graph, "D")
+    api.add_node(graph, "E")
+    api.add_node(graph, "F")
 
     # connect nodes in graph
-    graph.add_edge("A", "B", 5)
-    graph.add_edge("A", "C", 2)
-    graph.add_edge("B", "D", 3)
-    graph.add_edge("B", "C", 9)
-    graph.add_edge("C", "E", 5)
-    graph.add_edge("E", "D", 4)
-    graph.add_edge("E", "F", 6)
-    graph.add_edge("D", "F", 1)
+    api.add_edge(graph, "A", "B", 5)
+    api.add_edge(graph, "A", "C", 2)
+    api.add_edge(graph, "B", "D", 3)
+    api.add_edge(graph, "B", "C", 9)
+    api.add_edge(graph, "C", "E", 5)
+    api.add_edge(graph, "E", "D", 4)
+    api.add_edge(graph, "E", "F", 6)
+    api.add_edge(graph, "D", "F", 1)
 
     source_node = "A"
 
-    print("Running Dijikstra algorithm ... ")
-    shortest_distance_data = graph.find_shortest_path_using_dijikstra(start_node=source_node)
+    print("Running Dijikstra algorithm starting from node %s. " % source_node)
+    shortest_distance_data = api.find_shortest_path_using_dijikstra(graph, start_node=source_node)
     print("Shortest distance to all nodes from source node [%s] is: " % source_node)
     print(shortest_distance_data)
 

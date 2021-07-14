@@ -1,1 +1,1 @@
-from .api import GraphAPI as Graph, GraphTypes
+from .api import GraphAPI, GraphTypes

@@ -55,6 +55,18 @@ class UnsupportedGraphType(DSBaseException):
         super(UnsupportedGraphType, self).__init__(message)
 
 
+class DirectGraphDoesNotSupportAPI(DSBaseException):
+
+    def __init__(self, reason: str):
+        """
+        Undirected graph does not support this API.
+        :param reason: the reason it is not supported.
+        :type reason: str
+        """
+        message = "Directed graph does not support this API - %s ." % reason
+        super(DirectGraphDoesNotSupportAPI, self).__init__(message)
+
+
 class UnDirectGraphDoesNotSupportAPI(DSBaseException):
 
     def __init__(self, reason: str):
