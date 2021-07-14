@@ -32,6 +32,40 @@ class WalkAPI:
         else:
             self.current_strategy = strategy
 
+    def _traverse_dfs_get_height(self, node: TreeNode):
+        """
+        Recursive method which calculates the height of the child subtree and compares
+        with the height of other child subtrees to pick the one with max value.
+
+        :param node: The node of the tree
+        :type node: TreeNode
+        :return: the height of the tree / subtree
+        :rtype: int
+        """
+
+        if node.has_children():
+            children_height = []
+            for child in node.children:
+                child_height = self._traverse_dfs_get_height(child)
+                child_height += 1
+                children_height.append(child_height)
+
+            return max(children_height)
+
+        # base case for leaf node
+        else:
+            return 0
+
+    def traverse_get_height(self, root_node: TreeNode):
+        """
+        Invokes the DFR traversal to generate the height of the tree.
+        :param root_node: root node of the tree
+        :type root_node: TreeNode
+        :return: height of the tree
+        :rtype: int
+        """
+        return self._traverse_dfs_get_height(root_node)
+
     def traverse_dfs_tree_to_dict(self, node: TreeNode, children: list):
         """
         DFS traversal to convert tree to dict

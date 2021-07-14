@@ -94,6 +94,18 @@ class TreeAPI(object):
 
         return tree_as_dict
 
+    def get_height(self, root_node: TreeNode):
+        """
+        Get the height of the tree given the root node.
+
+        :param root_node: root node of the tree
+        :type root_node: TreeNode
+        :return: height of the tree
+        :rtype: int
+        """
+
+        return self.traversal_api.traverse_get_height(root_node)
+
 
 
 
